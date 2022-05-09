@@ -1,5 +1,8 @@
 const { Octokit } = require("@octokit/rest");
+const fastcsv = require("fast-csv");
+const fs = require("fs");
 
+const ws = fs.createWriteStream("data.csv");
 const octokit = new Octokit();
 
 const today = new Date();
@@ -39,6 +42,11 @@ async function getAllWorkFlowRuns_Paginate() {
                     }
               });
               console.log("Total runs in past 30 days: " + total_runs, "Total passed: " + total_passed*100/total_runs + "%");
+              let jsonData = {};
+              jsonData["total_runs"] = total_runs;
+              jsonData["total_passed"] = total_passed*100/total_runs;
+              jsonData["inserted_at"] = new Date();
+              writeDataToCSVFile(result);
             });
         
     } catch (err) {
@@ -46,4 +54,12 @@ async function getAllWorkFlowRuns_Paginate() {
     }
 }
 
+function writeDataToCSVFile(jsonData) { 
+    fastcsv
+    .write(jsonData, { headers: true })
+    .on("finish", function() {
+        console.log("Write to CSV successfully!");
+    })
+    .pipe(ws);
+}
 getAllWorkFlowRuns_Paginate();

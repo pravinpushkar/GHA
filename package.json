@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/pravinpushkar/GHA#readme",
   "dependencies": {
-    "@octokit/rest": "^18.12.0"
+    "@octokit/rest": "^18.12.0",
+    "fast-csv": "^4.3.6"
   }
 }
