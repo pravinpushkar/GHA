@@ -57,3 +57,9 @@ jobs:
               console.log("githu script Total runs in past 30 days: " + total_runs, "Total passed: " + total_passed*100/total_runs + "%");
               //return total_passed;
             });
+      - uses: gr2m/write-csv-file-action@v1.x
+        with:
+          path: stats.csv
+          columns: Column 1, Column 2
+          "Column 1": 1
+          "Column 2": 2
