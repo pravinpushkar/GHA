@@ -16,3 +16,4 @@ jobs:
       - name: Build code
         run: |
           npm install
+          node ./app.js
