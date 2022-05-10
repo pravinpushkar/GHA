@@ -1,8 +1,8 @@
 const { Octokit } = require("@octokit/rest");
-const fastcsv = require("fast-csv");
 const fs = require("fs");
+const csvWriter = require("csv-write-stream");
+const filePath = "data_apend.csv";
 
-const ws = fs.createWriteStream("data.csv");
 const octokit = new Octokit();
 
 const today = new Date();
@@ -33,7 +33,6 @@ async function getAllWorkFlowRuns_Paginate() {
                 ))
             ).then((result) => {
               console.log(result.length);
-              //console.log(result);
               let total_runs = result.length;
               let total_passed = 0;
               result.forEach(function(element) {
@@ -44,9 +43,9 @@ async function getAllWorkFlowRuns_Paginate() {
               console.log("Total runs in past 30 days: " + total_runs, "Total passed: " + total_passed*100/total_runs + "%");
               let jsonData = {};
               jsonData["total_runs"] = total_runs;
-              jsonData["total_passed"] = total_passed*100/total_runs;
+              jsonData["total_passed"] = (total_passed*100/total_runs).toFixed(0);
               jsonData["inserted_at"] = new Date();
-              writeDataToCSVFile(result);
+              appendDataToCSVFile(jsonData);
             });
         
     } catch (err) {
@@ -54,12 +53,18 @@ async function getAllWorkFlowRuns_Paginate() {
     }
 }
 
-function writeDataToCSVFile(jsonData) { 
-    fastcsv
-    .write(jsonData, { headers: true })
-    .on("finish", function() {
-        console.log("Write to CSV successfully!");
-    })
-    .pipe(ws);
+function appendDataToCSVFile(jsonData) {
+    if (!fs.existsSync(filePath))
+        writer = csvWriter({ headers: ["inserted_at", "total_passed", "total_runs"]});
+    else
+        writer = csvWriter({sendHeaders: false});
+
+    writer.pipe(fs.createWriteStream(filePath, {flags: 'a'}));
+    writer.write({
+        inserted_at: jsonData.inserted_at,
+        total_passed: jsonData.total_passed,
+        total_runs: jsonData.total_runs
+    });
+    writer.end();
 }
 getAllWorkFlowRuns_Paginate();

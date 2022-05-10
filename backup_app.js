@@ -43,3 +43,13 @@ async function getAllWorkFlowRuns_Paginate() {
         console.log(err);
     }
 }
+const ws = fs.createWriteStream("data.csv");
+const fastcsv = require("fast-csv");
+function writeDataToCSVFile(jsonData) { 
+    fastcsv
+    .write(jsonData, { headers: true })
+    .on("finish", function() {
+        console.log("Write to CSV successfully!");
+    })
+    .pipe(ws);
+}
