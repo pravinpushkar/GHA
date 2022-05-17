@@ -44,7 +44,7 @@ async function getAllWorkFlowRuns_Paginate() {
               let jsonData = {};
               jsonData["total_runs"] = total_runs;
               jsonData["total_passed"] = (total_passed*100/total_runs).toFixed(0);
-              jsonData["inserted_at"] = new Date();
+              jsonData["inserted_at"] = new Date().toUTCString();
               appendDataToCSVFile(jsonData);
             });
         
